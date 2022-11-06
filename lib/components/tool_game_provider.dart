@@ -7,7 +7,7 @@ import '../domain/model/slide_phone_model.dart';
 class ToolGameProvider with ChangeNotifier {
   int? status;
   final api = APIUtils(Dio());
-  List<SlidePhoneModel>? listSlidePhone;
+  List<SlidePhoneModel>? listSlidePhone=[];
   int percent = 1;
 
   void increment(int count) {

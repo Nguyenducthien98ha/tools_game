@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -27,23 +28,7 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     Ruler().init(context);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-          primarySwatch: Colors.blue,
-          hintColor: Colors.white,
-          inputDecorationTheme: InputDecorationTheme(
-              labelStyle: const TextStyle(color: Colors.white),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0)))),
-      home: const SplashPage(),
-      routes: <String, WidgetBuilder>{
-        '/HomePage': (BuildContext context) => const LoginApp(),
-        // '/HandleGame': (BuildContext context) =>
-        //     HandleGame(text1: 'Tài', text2: 'Xỉu')
-      },
-    );
+    return const SplashPage();
   }
 }
 
@@ -55,26 +40,21 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  void navigationToNextPage() {
-    Navigator.pushNamed(context, '/HomePage');
-  }
-
-  startSplashScreenTimer() async {
-    var duration = const Duration(milliseconds: 500);
-    return Timer(duration, navigationToNextPage);
-  }
-
   @override
   void initState() {
     super.initState();
     final provider = Provider.of<ToolGameProvider>(context, listen: false);
     provider.getd();
-    startSplashScreenTimer();
+    Future.delayed(
+        const Duration(seconds: 1),
+        () => Navigator.pushAndRemoveUntil(
+            context,
+            CupertinoPageRoute(builder: (context) => const LoginApp()),
+            (route) => false));
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,

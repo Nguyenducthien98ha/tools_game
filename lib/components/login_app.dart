@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -27,15 +28,12 @@ class _LoginAppState extends State<LoginApp>
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController passcode = TextEditingController();
-  Animation<Color>? animation;
-  Animation<Color>? animation1;
-  Animation<Color>? animation2;
-  AnimationController? controller;
+
 
   VideoPlayerController? _controller;
   Future<InfoToolModel>? _future;
   final _api = APIUtils(Dio());
-  int milliseconds = 2500;
+  int milliseconds = 4000;
 
   Timer? _timer;
   int _pos = 0;
@@ -48,67 +46,33 @@ class _LoginAppState extends State<LoginApp>
       ..initialize().then((_) {
         _controller!.play();
         _controller!.setLooping(true);
-        setState(() {});
+        // setState(() {});
       });
     _future = _api.getInfoTool();
     _timer = Timer.periodic(Duration(milliseconds: milliseconds), (Timer t) {
       _pos = (_pos + 1) % provider.listSlidePhone!.length;
-    });
+      showToast('${provider.listSlidePhone![_pos].phone} ${provider.listSlidePhone![_pos].description}',
+          context: context,
+          animation: StyledToastAnimation.slideFromRightFade,
+          reverseAnimation: StyledToastAnimation.slideToRightFade,
+          toastHorizontalMargin: 0.0,
+          position: const StyledToastPosition(
+              align: Alignment.topRight, offset: 40.0),
+          startOffset: const Offset(1.0, -3.0),
+          reverseEndOffset: const Offset(1.0, -3.0),
+          animDuration: const Duration(seconds: 1),
+          duration: const Duration(seconds: 4),
+          curve: Curves.linearToEaseOut,
+          reverseCurve: Curves.fastOutSlowIn);
 
-    controller = AnimationController(
-        duration: Duration(milliseconds: milliseconds), vsync: this);
-    //
-    final CurvedAnimation curve =
-        CurvedAnimation(parent: controller!, curve: Curves.linear);
-    animation = ColorTween(begin: Colors.white, end: Colors.transparent)
-        .animate(curve) as Animation<Color>?;
-    animation!.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller!.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller!.forward();
-      }
-      setState(() {});
-    });
-    controller!.forward();
 
-    //
-    final CurvedAnimation curve1 =
-        CurvedAnimation(parent: controller!, curve: Curves.linear);
-    animation1 = ColorTween(begin: Colors.black, end: Colors.transparent)
-        .animate(curve1) as Animation<Color>?;
-    animation1!.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller!.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller!.forward();
-      }
-      setState(() {});
     });
-    controller!.forward();
-
-    //
-    final CurvedAnimation curve2 = CurvedAnimation(
-        parent: controller!, curve: Curves.fastLinearToSlowEaseIn);
-    animation2 = ColorTween(begin: Colors.green, end: Colors.transparent)
-        .animate(curve2) as Animation<Color>?;
-    animation2!.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller!.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller!.forward();
-      }
-      setState(() {});
-    });
-    controller!.forward();
   }
 
   @override
   void dispose() {
     _controller!.dispose();
     _timer?.cancel();
-    // _timer = null;
-    controller!.dispose();
     super.dispose();
   }
 
@@ -146,8 +110,8 @@ class _LoginAppState extends State<LoginApp>
             return Stack(
               children: [
                 SizedBox(
-                  width: _controller!.value.size.width,
-                  height: _controller!.value.size.height,
+                  width: Ruler.width(context,100),
+                  height: Ruler.height(context,100),
                   child: VideoPlayer(
                     _controller!,
                   ),
@@ -171,44 +135,44 @@ class _LoginAppState extends State<LoginApp>
                     decelerationDuration: const Duration(milliseconds: 500),
                   ),
                 ),
-                Positioned(
-                  top: 80,
-                  right: 0,
-                  child: AnimatedBuilder(
-                      animation: animation!,
-                      builder: (context, child) {
-                        return AnimatedBuilder(
-                          animation: animation2!,
-                          builder: (context, child) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                    left: BorderSide(
-                                        color: animation2!.value, width: 4)),
-                                color: animation!.value,
-                              ),
-                              child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 7.5, horizontal: 5),
-                                  child: Consumer<ToolGameProvider>(
-                                    builder: (context, model, child) {
-                                      return AnimatedBuilder(
-                                        animation: animation1!,
-                                        builder: (context, child) {
-                                          return Ruler.setText(
-                                              '${model.listSlidePhone![_pos].phone} ${model.listSlidePhone![_pos].description}',
-                                              size: Ruler.setSize + 1,
-                                              color: animation1!.value);
-                                        },
-                                        child: const SizedBox(),
-                                      );
-                                    },
-                                  )),
-                            );
-                          },
-                        );
-                      }),
-                ),
+                // Positioned(
+                //   top: 80,
+                //   right: 0,
+                //   child: AnimatedBuilder(
+                //       animation: animation!,
+                //       builder: (context, child) {
+                //         return AnimatedBuilder(
+                //           animation: animation2!,
+                //           builder: (context, child) {
+                //             return Container(
+                //               decoration: BoxDecoration(
+                //                 border: Border(
+                //                     left: BorderSide(
+                //                         color: animation2!.value, width: 4)),
+                //                 color: animation!.value,
+                //               ),
+                //               child: Padding(
+                //                   padding: const EdgeInsets.symmetric(
+                //                       vertical: 7.5, horizontal: 5),
+                //                   child: Consumer<ToolGameProvider>(
+                //                     builder: (context, model, child) {
+                //                       return AnimatedBuilder(
+                //                         animation: animation1!,
+                //                         builder: (context, child) {
+                //                           return Ruler.setText(
+                //                               '${model.listSlidePhone![_pos].phone} ${model.listSlidePhone![_pos].description}',
+                //                               size: Ruler.setSize + 1,
+                //                               color: animation1!.value);
+                //                         },
+                //                         child: const SizedBox(),
+                //                       );
+                //                     },
+                //                   )),
+                //             );
+                //           },
+                //         );
+                //       }),
+                // ),
                 Positioned(
                   bottom: 15,
                   left: 40,

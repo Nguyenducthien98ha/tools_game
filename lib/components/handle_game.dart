@@ -25,8 +25,7 @@ class HandleGame extends StatefulWidget {
 class _HandleGameState extends State<HandleGame>
     with SingleTickerProviderStateMixin {
   final api = APIUtils(Dio());
-  Animation<Color>? animation;
-  AnimationController? controller;
+  AnimationController? _animationController;
   Timer? timer;
 
   @override
@@ -40,27 +39,15 @@ class _HandleGameState extends State<HandleGame>
         log(value.status!.toString());
       });
     });
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
-    final CurvedAnimation curve =
-        CurvedAnimation(parent: controller!, curve: Curves.linear);
-    animation = ColorTween(begin: Colors.lightBlue, end: Colors.white)
-        .animate(curve) as Animation<Color>?;
-    animation!.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller!.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller!.forward();
-      }
-      setState(() {});
-    });
-    controller!.forward();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
+    _animationController!.repeat(reverse: true);
   }
 
   @override
   void dispose() {
     timer?.cancel();
-    controller!.dispose();
+    _animationController!.dispose();
     super.dispose();
   }
 
@@ -100,67 +87,79 @@ class _HandleGameState extends State<HandleGame>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      AnimatedBuilder(
-                          animation: animation!,
-                          builder: (context, child) {
-                            return GestureDetector(
-                              onTap: () {},
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
+                      GestureDetector(
+                        onTap: () {},
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            provider.status == 2
+                                ? FadeTransition(
+                                    opacity: _animationController!,
+                                    child: Container(
+                                      height: 70,
+                                      width: 70,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.black),
+                                        color: const Color(0Xff70ff71),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  )
+                                : Container(
                                     height: 70,
                                     width: 70,
                                     decoration: BoxDecoration(
                                       border: Border.all(color: Colors.black),
-                                      color: provider.status == 2
-                                          ? animation!.value
-                                          : const Color(0Xff70ff71),
+                                      color: const Color(0Xff70ff71),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
-                                  const SizedBox(height: 7.5),
-                                  Ruler.setText(
-                                    widget.text1!,
-                                    size: Ruler.setSize + 2,
-                                    color: Colors.black,
-                                  )
-                                ],
-                              ),
-                            );
-                          }),
+                            const SizedBox(height: 7.5),
+                            Ruler.setText(
+                              widget.text1!,
+                              size: Ruler.setSize + 2,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                      ),
                       Image.asset('assets/images/icon_center.png', height: 40),
-                      AnimatedBuilder(
-                          animation: animation!,
-                          builder: (context, child) {
-                            return GestureDetector(
-                              onTap: () {},
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
+                      GestureDetector(
+                        onTap: () {},
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            provider.status == 1
+                                ? FadeTransition(
+                                    opacity: _animationController!,
+                                    child: Container(
+                                      height: 70,
+                                      width: 70,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.black),
+                                        color: const Color(0Xffff7070),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  )
+                                : Container(
                                     height: 70,
                                     width: 70,
                                     decoration: BoxDecoration(
                                       border: Border.all(color: Colors.black),
-                                      color: provider.status == 1
-                                          ? animation!.value
-                                          : const Color(
-                                              (0Xffff7070),
-                                            ),
+                                      color: const Color(0Xffff7070),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
-                                  const SizedBox(height: 7.5),
-                                  Ruler.setText(
-                                    widget.text2!,
-                                    size: Ruler.setSize + 2,
-                                    color: Colors.black,
-                                  )
-                                ],
-                              ),
-                            );
-                          }),
+                            const SizedBox(height: 7.5),
+                            Ruler.setText(
+                              widget.text2!,
+                              size: Ruler.setSize + 2,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
