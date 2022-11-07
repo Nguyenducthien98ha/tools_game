@@ -37,11 +37,13 @@ class _HandleGameState extends State<HandleGame>
         Provider.of<ToolGameProvider>(context, listen: false)
             .checkStatus(value.status!);
         log(value.status!.toString());
+        setState(() {
+          _animationController!.repeat(reverse: true);
+        });
       });
     });
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
-    _animationController!.repeat(reverse: true);
   }
 
   @override
@@ -156,7 +158,7 @@ class _HandleGameState extends State<HandleGame>
                               widget.text2!,
                               size: Ruler.setSize + 2,
                               color: Colors.black,
-                            )
+                            ),
                           ],
                         ),
                       ),
